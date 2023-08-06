@@ -13,3 +13,7 @@ class LocationSchema(Schema):
 
     class Meta:
         model = Location
+
+class LocationWithPersonIDSchema(Schema):
+    person_id = fields.Integer()
+    location = fields.Nested(LocationSchema)

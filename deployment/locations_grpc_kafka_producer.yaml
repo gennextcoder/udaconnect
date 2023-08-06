@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: locations-grpc-kafka-producer
+  name: locations-grpc-kafka-producer
+spec:
+  ports:
+  - name: "5005"
+    port: 5005
+    targetPort: 5005
+    nodePort: 30004
+  selector:
+    service: locations-grpc-kafka-producer
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: locations-grpc-kafka-producer
+  name: locations-grpc-kafka-producer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locations-grpc-kafka-producer
+  template:
+    metadata:
+      labels:
+        app: locations-grpc-kafka-producer
+    spec:
+      hostname: locations-grpc-kafka-producer
+      containers:
+      - image: akhidockhub/locations_grpc_kafka_producer
+        imagePullPolicy: Always
+        name: locations-grpc-kafka-producer
+        ports:
+         - containerPort: 5005
+        env:
+         - name: PYTHONUNBUFFERED
+           value: "1"

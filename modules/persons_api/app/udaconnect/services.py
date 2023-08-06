@@ -6,13 +6,14 @@ from app.udaconnect.models import Person
 from app.udaconnect.schemas import PersonSchema
 
 logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger("udaconnect-api")
+logger = logging.getLogger("udaconnect-persons-api")
 
 
 class PersonService:
     @staticmethod
     def create(person: Dict) -> Person:
         new_person = Person()
+        new_person.id = person["id"]
         new_person.first_name = person["first_name"]
         new_person.last_name = person["last_name"]
         new_person.company_name = person["company_name"]

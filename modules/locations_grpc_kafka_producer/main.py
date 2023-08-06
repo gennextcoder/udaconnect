@@ -15,7 +15,8 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
         request_value = {
             "id": request.id,
             "person_id": request.person_id,
-            "coordinate": request.coordinate,
+            "latitude": request.latitude,
+            "longitude": request.longitude,
             "creation_time": request.creation_time
         }
         print(request_value)
@@ -32,7 +33,7 @@ location_pb2_grpc.add_LocationServiceServicer_to_server(LocationServicer(), serv
 
 # Initialize kafka producer
 TOPIC_NAME = 'locations'
-KAFKA_SERVER = 'localhost:9092'
+KAFKA_SERVER = 'kafka:9092'
 producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
 
 print("Server starting on port 5005...")

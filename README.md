@@ -79,41 +79,52 @@ Afterwards, you can test that `kubectl` works by running a command like `kubectl
 1. `kubectl apply -f deployment/db-configmap.yaml` - Set up environment variables for the pods
 2. `kubectl apply -f deployment/db-secret.yaml` - Set up secrets for the pods
 3. `kubectl apply -f deployment/postgres.yaml` - Set up a Postgres database running PostGIS
-4. `kubectl apply -f deployment/udaconnect-api.yaml` - Set up the service and deployment for the API
-5. `kubectl apply -f deployment/udaconnect-app.yaml` - Set up the service and deployment for the web app
-6. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
+4. `kubectl apply -f deployment/udaconnect-connections-api.yaml` - Set up the service and deployment for the connections API
+5. `kubectl apply -f deployment/udaconnect-locations-api.yaml` - Set up the service and deployment for the locations API
+6. `kubectl apply -f deployment/udaconnect-persons-api.yaml` - Set up the service and deployment for the persons API
+7. `kubectl apply -f deployment/udaconnect-app.yaml` - Set up the service and deployment for the web app
+8. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
+10. `kubectl apply -f deployment/kafka.yaml` - Set up kafka on the cluster
+11. `kubectl apply -f deployment/locations-grpc-kafka-producer.yaml` - Set up the service and deployment for the GRPC based kafka producer for locations data
+12. `kubectl apply -f deployment/locations-kafka-consumer.yaml` - Set up the deployment for the kafka consumer for locations data
 
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 
 Note: The first time you run this project, you will need to seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
 
 ### Verifying it Works
-Once the project is up and running, you should be able to see 3 deployments and 3 services in Kubernetes:
-`kubectl get pods` and `kubectl get services` - should both return `udaconnect-app`, `udaconnect-api`, and `postgres`
+
+Once the project is up and running, you should be able to see 8 deployments and 7 services in Kubernetes:
+<u>Deployments</u>
+1. postgres
+2. kafka
+3. locations-grpc-kafka-producer
+4. locations-kafka-consumer
+5. udaconnect-locations-api
+6. udaconnect-persons-api
+7. udaconnect-connections-api
+8. udaconnect-app
+
+<u>Services</u>
+1. postgres
+2. kafka
+3. locations-grpc-kafka-producer
+4. udaconnect-locations-api
+5. udaconnect-persons-api
+6. udaconnect-connections-api
+7. udaconnect-app
+
+NOTE: The kafka based services may restart a few times until the kafka pod becomes ready
 
 
 These pages should also load on your web browser:
-* `http://localhost:30001/` - OpenAPI Documentation
-* `http://localhost:30001/api/` - Base path for API
+* `http://localhost:<NodePort_of_backend_service>/` - OpenAPI Documentation
+* `http://localhost:<NodePort_of_backend_service>/api/` - Base path for API
 * `http://localhost:30000/` - Frontend ReactJS Application
-
-#### Deployment Note
-You may notice the odd port numbers being served to `localhost`. [By default, Kubernetes services are only exposed to one another in an internal network](https://kubernetes.io/docs/concepts/services-networking/service/). This means that `udaconnect-app` and `udaconnect-api` can talk to one another. For us to connect to the cluster as an "outsider", we need to a way to expose these services to `localhost`.
-
-Connections to the Kubernetes services have been set up through a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport). (While we would use a technology like an [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) to expose our Kubernetes services in deployment, a NodePort will suffice for development.)
-
-## Development
-### New Services
-New services can be created inside of the `modules/` subfolder. You can choose to write something new with Flask, copy and rework the `modules/api` service into something new, or just create a very simple Python application.
-
-As a reminder, each module should have:
-1. `Dockerfile`
-2. Its own corresponding DockerHub repository
-3. `requirements.txt` for `pip` packages
-4. `__init__.py`
-
-### Docker Images
-`udaconnect-app` and `udaconnect-api` use docker images from `udacity/nd064-udaconnect-app` and `udacity/nd064-udaconnect-api`. To make changes to the application, build your own Docker image and push it to your own DockerHub repository. Replace the existing container registry path with your own.
+The NodePorts of the various REST-based backend services are:
+1. 30002 - udaconnect-connections-api
+2. 30003 - udaconnect-locations-api
+3. 30005 - udaconnect-persons-api
 
 ## Configs and Secrets
 In `deployment/db-secret.yaml`, the secret variable is `d293aW1zb3NlY3VyZQ==`. The value is simply encoded and not encrypted -- this is ***not*** secure! Anyone can decode it to see what it is.
@@ -140,13 +151,3 @@ This will enable you to connect to the database at `localhost`. You should then 
 To manually connect to the database, you will need software compatible with PostgreSQL.
 * CLI users will find [psql](http://postgresguide.com/utilities/psql.html) to be the industry standard.
 * GUI users will find [pgAdmin](https://www.pgadmin.org/) to be a popular open-source solution.
-
-## Architecture Diagrams
-Your architecture diagram should focus on the services and how they talk to one another. For our project, we want the diagram in a `.png` format. Some popular free software and tools to create architecture diagrams:
-1. [Lucidchart](https://www.lucidchart.com/pages/)
-2. [Google Docs](docs.google.com) Drawings (In a Google Doc, _Insert_ - _Drawing_ - _+ New_)
-3. [Diagrams.net](https://app.diagrams.net/)
-
-## Tips
-* We can access a running Docker container using `kubectl exec -it <pod_id> sh`. From there, we can `curl` an endpoint to debug network issues.
-* The starter project uses Python Flask. Flask doesn't work well with `asyncio` out-of-the-box. Consider using `multiprocessing` to create threads for asynchronous behavior in a standard Flask application.

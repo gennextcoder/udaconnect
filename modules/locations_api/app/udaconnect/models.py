@@ -55,3 +55,7 @@ class Location(db.Model):
         coord_text = self.wkt_shape
         return coord_text[coord_text.find("(") + 1 : coord_text.find(" ")]
 
+@dataclass
+class LocationWithPersonID:
+    location: Location
+    person_id: Int

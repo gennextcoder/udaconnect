@@ -1,0 +1,9 @@
+Design considerations
+------ --------------
+1. Moved the endpoints pertaining to connections, locations and persons to separate microservices.
+2. Because the volume of location data to be ingested could be huge, the POST endpoint in the locations service has been replaced with
+a) a GRPC based kafka producer which writes location data on a kafka topic
+b) a kafka consumer which reaction the location data from the said topic and writes them to the DB.
+This way, the database would not be overloaded.
+3. The connections service requests the persons and locations related data from the respective microservices instead of reading
+from the database directly. This was done to keep the services loosely coupled.

@@ -20,16 +20,15 @@ api = Namespace("UdaConnect", description="Connections via geolocation.")  # noq
 # TODO: This needs better exception handling
 
 @api.route("/connections/<person_id>/connection")
+@api.param("person_id", "ID for a given Person", _in="query")
 @api.param("start_date", "Lower bound of date range", _in="query")
 @api.param("end_date", "Upper bound of date range", _in="query")
 @api.param("distance", "Proximity to a given user in meters", _in="query")
 class ConnectionDataResource(Resource):
     @responds(schema=ConnectionSchema, many=True)
     def get(self, person_id) -> ConnectionSchema:
-        start_date: datetime = datetime.strptime(
-            request.args["start_date"], DATE_FORMAT
-        )
-        end_date: datetime = datetime.strptime(request.args["end_date"], DATE_FORMAT)
+        start_date = request.args["start_date"]
+        end_date = request.args["end_date"]
         distance: Optional[int] = request.args.get("distance", 5)
 
         results = ConnectionService.find_contacts(
