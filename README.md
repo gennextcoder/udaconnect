@@ -94,8 +94,8 @@ Note: The first time you run this project, you will need to seed the database wi
 
 ### Verifying it Works
 
-Once the project is up and running, you should be able to see 8 deployments and 7 services in Kubernetes:
-<u>Deployments</u>
+Once the project is up and running, you should be able to see 8 deployments and 7 services in Kubernetes:  
+**Deployments**
 1. postgres
 2. kafka
 3. locations-grpc-kafka-producer
@@ -105,7 +105,7 @@ Once the project is up and running, you should be able to see 8 deployments and 
 7. udaconnect-connections-api
 8. udaconnect-app
 
-<u>Services</u>
+**Services**
 1. postgres
 2. kafka
 3. locations-grpc-kafka-producer
