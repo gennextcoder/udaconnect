@@ -26,7 +26,12 @@ class LocationService:
         return location
     
     @staticmethod
-    def retrieve_neighboring_persons_and_locations(person_id, start_date, end_date, distance) -> List[LocationWithPersonID]:
+    def retrieve_connections_partial(person_id, start_date, end_date, distance) -> List[LocationWithPersonID]:
+        """
+        Returns the IDs and locations of all the persons who are within a given distance of a given Person within a
+        date range.
+        """
+        # Get all the locations the given person has been within a given date range
         locations: List = db.session.query(Location).filter(
             Location.person_id == person_id
         ).filter(Location.creation_time < end_date).filter(

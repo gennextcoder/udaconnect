@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  description: Manage locations.
+  version: "1.0.0"
+  title: Udaconnect Locations API
+paths:
+  /locations/{location_id}:
+    get:
+      summary: Retrieve a location from the DB
+      operationId: getLocation
+      description: By passing in a location_id you can retrieve the location information
+      parameters:
+        - in: path
+          name: location_id
+          schema:
+            type: string
+          required: true
+          description: ID of the location to get
+      responses:
+        '200':
+          description: Successfully retrieved a location
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '404':
+          description: Requested location ID was not found
+  /locations/persons_and_locations:
+    get:
+      summary: Retrieve the IDs and locations of a given person's connections
+      operationId: getPersonsAndLocation
+      description: By passing the following parameters, you can retrieve the IDs and locations of connections
+      parameters:
+        - in: query
+          name: person_id
+          schema:
+            type: number
+          required: true
+          description: ID of the person whose connections (with their locations) have to be retrieved
+        - in: query
+          name: start_date
+          schema:
+            type: string
+          required: true
+          description: Start date for the query
+        - in: query
+          name: end_date
+          schema:
+            type: string
+          required: true
+          description: End date for the query
+        - in: query
+          name: distance
+          schema:
+            type: number
+          required: true
+          description: Proximity to a given person in meters
+      responses:
+        '200':
+          description: Successfully retrieved the IDs and locations of connections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PersonIdAndLocation'
+        '404':
+          description: Requested location ID was not found
+components:
+  schemas:
+    Location:
+      type: object
+      required:
+        - id
+        - person_id
+        - longitude
+        - latitude
+        - creation_time
+      properties:
+        id:
+          type: number
+          example: 1
+        person_id:
+          type: number
+          example: 1
+        longitude:
+          type: string
+          example: "37.55363"
+        latitude:
+          type: string
+          example: "-122.290883"
+        creation_time:
+          type: string
+          format: date-time
+          example: "2020-07-07T10:37:06"
+    PersonIdAndLocation:
+      type: object
+      required:
+        - person_id
+        - location
+      properties:
+        person_id:
+          type: number
+          example: 1
+        location:
+          type: object
+          properties:
+            id:
+              type: number
+              example: 1
+            person_id:
+              type: number
+              example: 1
+            longitude:
+              type: string
+              example: "37.55363"
+            latitude:
+              type: string
+              example: "-122.290883"
+            creation_time:
+              type: string
+              format: date-time
+              example: "2020-07-07T10:37:06"

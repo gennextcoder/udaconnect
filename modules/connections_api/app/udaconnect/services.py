@@ -31,10 +31,12 @@ class ConnectionService:
             return []
         person_map: Dict[str, Person] = {person["id"]: person for person in result.json()}
 
-        # Prepare arguments for queries
+        # Get the IDs and locations of all the connections of the given person
         result = requests.get(LOCATIONS_PERSONS_API_URL.format(person_id, start_date, end_date, meters))
         if result.status_code != 200:
             return []
+
+        # Populate and return the connections (with not just the person ID but the entire person data) of the given person    
         persons_locations: List = result.json()
         contacts: List[Connection] = []
         for person_location in persons_locations:
@@ -43,4 +45,5 @@ class ConnectionService:
             contacts.append(Connection(
                         person=person_map[person_location['person_id']], location=person_location['location']
                     ))
+                    
         return contacts

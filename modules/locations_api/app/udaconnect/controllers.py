@@ -29,7 +29,7 @@ class PersonsAndLocations(Resource):
         )
         end_date: datetime = datetime.strptime(request.args["end_date"], DATE_FORMAT)
         distance = request.args["distance"]
-        return LocationService.retrieve_neighboring_persons_and_locations(person_id, start_date, end_date, distance)
+        return LocationService.retrieve_connections_partial(person_id, start_date, end_date, distance)
 
 
 @api.route("/locations/<location_id>")

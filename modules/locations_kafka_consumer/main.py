@@ -16,6 +16,7 @@ import json
 import logging
 
 TOPIC_NAME = 'locations'
+# "kafka" is the name of the kafka service running on Kubernetes
 consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers="kafka:9092")
 
 engine = create_engine(DATABASE_URI)
@@ -42,13 +43,14 @@ def consume():
             if validation_results:
                 print(f"Unexpected data format in payload: {validation_results}")
                 return
+            # Write location data to the DB
             new_location = Location()
             new_location.id = location["id"]
             new_location.person_id = location["person_id"]
             new_location.creation_time = location["creation_time"]
             new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
-            with session_scope() as db:
-                db.add(new_location)
+            with session_scope() as db_session:
+                db_session.add(new_location)
         except Exception as e:
             logging.exception("Exception occured!")
 

@@ -21,6 +21,7 @@ class LocationServicer(location_pb2_grpc.LocationServiceServicer):
         }
         print(request_value)
         kafka_data = json.dumps(request_value).encode()
+        # Send location data to kafka topic
         producer.send(TOPIC_NAME, kafka_data)
         producer.flush()
 
@@ -33,6 +34,7 @@ location_pb2_grpc.add_LocationServiceServicer_to_server(LocationServicer(), serv
 
 # Initialize kafka producer
 TOPIC_NAME = 'locations'
+# "kafka" is the name of the kafka service running on Kubernetes
 KAFKA_SERVER = 'kafka:9092'
 producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
 

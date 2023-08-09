@@ -1,0 +1,98 @@
+openapi: 3.0.0
+info:
+  description: Manage persons.
+  version: "1.0.0"
+  title: Udaconnect Persons API
+paths:
+  /persons/:
+    get:
+      summary: Retrieve all the persons from the DB
+      operationId: getPersons
+      responses:
+        '200':
+          description: Successfully retrieved all the persons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Person'
+    post:
+      summary: Create a new person
+      operationId: createPerson
+      description: By passing the following parameters you can create a new person
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: number
+          required: true
+          description: ID of the person to be created
+        - in: query
+          name: first_name
+          schema:
+            type: string
+          required: true
+          description: First name of the person to be created
+        - in: query
+          name: last_name
+          schema:
+            type: string
+          required: true
+          description: Last name of the person to be created
+        - in: query
+          name: company_name
+          schema:
+            type: string
+          required: true
+          description: Company name of the person to be created
+      responses:
+        '200':
+          description: Successfully retrieved a person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+  /persons/{person_id}:
+    get:
+      summary: Retrieve a person from the DB
+      operationId: getPerson
+      description: By passing in a person_id you can retrieve the person information
+      parameters:
+        - in: path
+          name: person_id
+          schema:
+            type: number
+          required: true
+          description: ID of the person to be found
+      responses:
+        '200':
+          description: Successfully retrieved a person
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '404':
+          description: Requested person ID was not found
+components:
+  schemas:
+    Person:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - company_name
+      properties:
+        id:
+          type: number
+          example: 6
+        first_name:
+          type: string
+          example: "Frank"
+        last_name:
+          type: string
+          example: "Shader"
+        company_name:
+          type: string
+          example: "USDA"

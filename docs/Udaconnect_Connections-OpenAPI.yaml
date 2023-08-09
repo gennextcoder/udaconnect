@@ -1,0 +1,104 @@
+openapi: 3.0.0
+info:
+  description: Return a person's connections.
+  version: "1.0.0"
+  title: Udaconnect Connections API
+paths:
+  /connections/{person_id}/connection:
+    get:
+      summary: Retrieve a person's connections
+      operationId: getConnections
+      description: By passing the following parameters, you can return a person's connections
+      parameters:
+        - in: path
+          name: person_id
+          schema:
+            type: number
+          required: true
+          description: ID of the person whose connections have to be found
+        - in: query
+          name: start_date
+          schema:
+            type: string
+          required: true
+          description: Start date for the query
+        - in: query
+          name: end_date
+          schema:
+            type: string
+          required: true
+          description: End date for the query
+        - in: query
+          name: distance
+          schema:
+            type: number
+          required: true
+          description: Proximity to a given person in meters
+      responses:
+        '200':
+          description: Successfully retrieved the connections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Connection'
+        '404':
+          description: Requested location ID was not found
+components:
+  schemas:
+    Location:
+      type: object
+      required:
+        - id
+        - person_id
+        - longitude
+        - latitude
+        - creation_time
+      properties:
+        id:
+          type: number
+          example: 1
+        person_id:
+          type: number
+          example: 1
+        longitude:
+          type: string
+          example: "37.55363"
+        latitude:
+          type: string
+          example: "-122.290883"
+        creation_time:
+          type: string
+          format: date-time
+          example: "2020-07-07T10:37:06"
+    Person:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - company_name
+      properties:
+        id:
+          type: number
+          example: 6
+        first_name:
+          type: number
+          example: "Frank"
+        last_name:
+          type: string
+          example: "Shader"
+        company_name:
+          type: string
+          example: "USDA"
+    Connection:
+      type: object
+      required:
+        - location
+        - person
+      properties:
+        location:
+          $ref: '#/components/schemas/Location'
+        person:
+          $ref: '#/components/schemas/Person'
